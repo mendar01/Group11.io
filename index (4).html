@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Inequality — EAP Group Presentation</title>
+<style>
+  :root{
+    --ink:#12181f;
+    --ink-soft:#4a5568;
+    --paper:#f7f8fa;
+    --card:#ffffff;
+    --accent:#c0392b;
+    --accent-2:#1b4965;
+    --gold:#e8a33d;
+    --line:#e2e6ec;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Inter","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    background:#0e1116;
+    color:var(--ink);
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ---------- Deck shell ---------- */
+  #deck{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+  .slide{
+    position:absolute;inset:0;
+    background:var(--paper);
+    display:none;
+    flex-direction:column;
+    padding:clamp(24px,4.2vh,58px) clamp(28px,5.2vw,90px);
+    overflow-y:auto;
+  }
+  .slide.active{display:flex;animation:fade .38s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+  /* ---------- Slide furniture ---------- */
+  .topbar{display:flex;justify-content:space-between;align-items:center;
+    font-size:clamp(11px,1.15vw,14px);letter-spacing:.09em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;border-bottom:1px solid var(--line);
+    padding-bottom:12px;margin-bottom:clamp(16px,2.6vh,30px);flex:0 0 auto}
+  .topbar .topic{color:var(--accent)}
+  h1{font-size:clamp(30px,4.6vw,62px);line-height:1.06;letter-spacing:-.02em;font-weight:800;color:var(--ink)}
+  h2{font-size:clamp(24px,3.2vw,44px);line-height:1.12;letter-spacing:-.015em;font-weight:800;color:var(--ink);margin-bottom:clamp(10px,1.8vh,20px)}
+  h3{font-size:clamp(15px,1.5vw,20px);font-weight:700;color:var(--accent-2);margin-bottom:6px}
+  p,li{font-size:clamp(14px,1.35vw,19px);line-height:1.55;color:var(--ink-soft)}
+  ul{list-style:none}
+  li{position:relative;padding-left:22px;margin-bottom:9px}
+  li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:8px;
+    background:var(--accent);border-radius:2px;transform:rotate(45deg)}
+  b,strong{color:var(--ink);font-weight:700}
+  .kicker{font-size:clamp(12px,1.15vw,15px);letter-spacing:.14em;text-transform:uppercase;
+    font-weight:700;color:var(--accent);margin-bottom:14px}
+  .lede{font-size:clamp(16px,1.7vw,23px);line-height:1.5;color:var(--ink-soft);max-width:62ch}
+  .foot{display:flex;justify-content:space-between;align-items:flex-end;
+    margin-top:auto;padding-top:18px;font-size:clamp(10px,1vw,13px);color:#8a94a3;flex:0 0 auto}
+  .foot .badge{background:#eef1f5;border:1px solid var(--line);border-radius:999px;
+    padding:5px 13px;font-weight:700;color:var(--accent-2);letter-spacing:.05em;text-transform:uppercase}
+  .speaker-tag{display:inline-flex;align-items:center;gap:8px;background:var(--accent-2);color:#fff;
+    font-size:clamp(10px,1vw,12.5px);font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:6px 13px;border-radius:999px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,40px)}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.8vw,26px)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:clamp(14px,1.8vh,24px) clamp(16px,1.6vw,26px);box-shadow:0 1px 2px rgba(18,24,31,.05)}
+  .card.accent{border-top:4px solid var(--accent)}
+  .card.gold{border-top:4px solid var(--gold)}
+  .card.blue{border-top:4px solid var(--accent-2)}
+
+  /* ---------- Team ---------- */
+  .team{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(12px,1.5vw,22px);margin-top:clamp(16px,2.4vh,28px)}
+  .member{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:clamp(13px,1.6vh,20px);border-left:5px solid var(--accent-2)}
+  .member .n{font-size:clamp(10px,1vw,12px);letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);font-weight:800;margin-bottom:6px}
+  .member .role{font-size:clamp(13px,1.3vw,17px);font-weight:700;color:var(--ink);line-height:1.3}
+  .member .scope{font-size:clamp(11.5px,1.15vw,14.5px);color:var(--ink-soft);margin-top:6px;line-height:1.45}
+
+  /* ---------- Stat blocks ---------- */
+  .statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.9vw,30px);margin:clamp(14px,2vh,26px) 0}
+  .stat{background:var(--ink);color:#fff;border-radius:16px;padding:clamp(16px,2.2vh,30px)}
+  .stat .big{font-size:clamp(32px,4.4vw,62px);font-weight:800;line-height:1;color:#fff;letter-spacing:-.03em}
+  .stat .unit{font-size:clamp(15px,1.7vw,24px);font-weight:700;color:var(--gold)}
+  .stat .cap{font-size:clamp(11.5px,1.15vw,15px);color:#c3cbd6;margin-top:10px;line-height:1.45}
+  .stat.alt{background:var(--accent-2)}
+  .stat.alt2{background:#7d2a20}
+
+  /* ---------- Bar chart (CSS) ---------- */
+  .chart{margin:clamp(10px,1.6vh,20px) 0}
+  .bar-row{display:grid;grid-template-columns:minmax(150px,22%) 1fr auto;align-items:center;gap:14px;margin-bottom:12px}
+  .bar-label{font-size:clamp(12px,1.2vw,16px);font-weight:700;color:var(--ink);text-align:right}
+  .bar-track{background:#e6eaf0;border-radius:8px;height:clamp(20px,2.6vh,30px);overflow:hidden}
+  .bar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent),#e05a45)}
+  .bar-fill.blue{background:linear-gradient(90deg,var(--accent-2),#3f7ea3)}
+  .bar-fill.gold{background:linear-gradient(90deg,var(--gold),#f2c66b)}
+  .bar-val{font-size:clamp(12px,1.25vw,17px);font-weight:800;color:var(--ink);min-width:74px}
+
+  /* ---------- Cause/effect flow ---------- */
+  .flow{display:flex;align-items:stretch;gap:10px;margin-top:8px;flex-wrap:wrap}
+  .flow .node{flex:1 1 0;min-width:130px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:13px 15px}
+  .flow .node h3{font-size:clamp(12.5px,1.2vw,16px);margin-bottom:4px}
+  .flow .node p{font-size:clamp(11.5px,1.1vw,14px)}
+  .flow .arrow{align-self:center;color:var(--accent);font-size:20px;font-weight:800}
+
+  /* ---------- Vocabulary chips ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .chip{background:#eef1f5;border:1px solid var(--line);border-radius:999px;
+    padding:6px 13px;font-size:clamp(11.5px,1.15vw,15px);font-weight:600;color:var(--accent-2)}
+  .chip.hot{background:#fdecea;border-color:#f5c6c0;color:var(--accent)}
+
+  /* ---------- Sources ---------- */
+  .sources{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.4vw,20px);margin-top:6px}
+  .src{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent-2);
+    border-radius:10px;padding:clamp(10px,1.3vh,16px) clamp(12px,1.3vw,18px)}
+  .src .org{font-size:clamp(11px,1.05vw,13.5px);font-weight:800;text-transform:uppercase;
+    letter-spacing:.08em;color:var(--accent)}
+  .src .ttl{font-size:clamp(12.5px,1.25vw,16.5px);font-weight:700;color:var(--ink);line-height:1.3;margin:3px 0}
+  .src .url{font-size:clamp(10.5px,1.05vw,13.5px);color:#5c6b7f;word-break:break-all;line-height:1.35}
+
+  /* ---------- Q&A ---------- */
+  .qa{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.6vw,24px)}
+  .qa .q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+  .qa .q .qq{font-weight:700;color:var(--ink);font-size:clamp(13px,1.3vw,17px)}
+  .qa .q .aa{font-size:clamp(11.5px,1.15vw,14.5px);color:var(--ink-soft);margin-top:5px;line-height:1.45}
+
+  /* ---------- Controls ---------- */
+  #controls{position:fixed;bottom:14px;right:20px;display:flex;gap:8px;align-items:center;z-index:40}
+  #controls button{background:rgba(255,255,255,.9);border:1px solid var(--line);color:var(--ink);
+    width:38px;height:38px;border-radius:50%;font-size:16px;cursor:pointer;font-weight:700;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);transition:.18s}
+  #controls button:hover{background:#fff;transform:translateY(-1px)}
+  #counter{color:#fff;font-size:13px;font-weight:700;letter-spacing:.06em;
+    background:rgba(255,255,255,.16);padding:7px 13px;border-radius:999px}
+  #bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);width:0;z-index:50;transition:width .3s}
+  #hint{position:fixed;bottom:18px;left:20px;color:rgba(255,255,255,.42);font-size:12px;z-index:40}
+
+  @media (max-width:820px){
+    .grid2,.grid3,.team,.sources,.qa,.statrow{grid-template-columns:1fr}
+    .bar-row{grid-template-columns:1fr;gap:6px}
+    .bar-label{text-align:left}
+    #hint{display:none}
+  }
+  @media print{
+    body{overflow:visible;background:#fff}
+    .slide{display:flex!important;position:relative;page-break-after:always;height:auto;min-height:0}
+    #controls,#hint,#bar{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="deck">
+
+<!-- ================= SLIDE 1 : TITLE / INTRODUCTION ================= -->
+<section class="slide active">
+  <div class="topbar">
+    <span class="topic">EAP Group Presentation</span>
+    <span>Finance &amp; Society · Slide 1 of 8</span>
+  </div>
+
+  <div class="kicker">Type of inequality: economic inequality</div>
+  <h1>Financial Inequality</h1>
+  <p class="lede" style="margin-top:16px">
+    Why a shrinking share of people holds a growing share of the world's money —
+    how we measure it, what drives it, and what can be done about it.
+  </p>
+
+  <div class="team">
+    <div class="member">
+      <div class="n">Speaker 1</div>
+      <div class="role">Introduction &amp; definitions</div>
+      <div class="scope">Slides 1–2 · our topic, key terms, how inequality is measured</div>
+    </div>
+    <div class="member">
+      <div class="n">Speaker 2</div>
+      <div class="role">The evidence</div>
+      <div class="scope">Slide 3 · global and national data, wealth pyramids</div>
+    </div>
+    <div class="member">
+      <div class="n">Speaker 3</div>
+      <div class="role">Causes &amp; effects</div>
+      <div class="scope">Slides 4–5 · drivers of the gap, consequences for society</div>
+    </div>
+    <div class="member">
+      <div class="n">Speaker 4</div>
+      <div class="role">Solutions &amp; conclusion</div>
+      <div class="scope">Slides 6–8 · policy responses, Q&amp;A, references</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="speaker-tag">▶ Speaker 1 — begins</span>
+    <span class="badge">Timing: 15–20 min</span>
+  </div>
+</section>
+
+<!-- ================= SLIDE 2 : KEY CONCEPTS ================= -->
+<section class="slide">
+  <div class="topbar">
+    <span class="topic">Financial Inequality</span>
+    <span>Slide 2 of 8 · Definitions</span>
+  </div>
+
+  <div class="speaker-tag" style="margin-bottom:14px">Speaker 1</div>
+  <h2>Three words we must not confuse</h2>
+
+  <div class="grid3">
+    <div class="card accent">
+      <h3>Income inequality</h3>
+      <p>Unequal distribution of what people <b>earn</b> — wages, salaries, benefits — usually measured over a year.</p>
+    </div>
+    <div class="card blue">
+      <h3>Wealth inequality</h3>
+      <p>Unequal distribution of what people <b>own</b> — property, savings, shares — accumulated over a lifetime and inherited.</p>
+    </div>
+    <div class="card gold">
+      <h3>Economic inequality</h3>
+      <p>The umbrella term covering both, plus gaps in <b>opportunity</b>: education, healthcare and social mobility.</p>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:20px">
+    <div>
+      <h3 style="margin-bottom:8px">How economists measure the gap</h3>
+      <ul>
+        <li><b>Gini coefficient</b> — a single number from 0 (everyone equal) to 1 (one person takes everything). The OECD average is about <b>0.31</b>.</li>
+        <li><b>Share of total</b> — for example, the percentage of national income taken by the richest 10%.</li>
+        <li><b>Wealth per adult</b> — the stock of assets each person holds, not the flow of income.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="margin-bottom:8px">Our key vocabulary today</h3>
+      <div class="chips">
+        <span class="chip">wealth concentration</span>
+        <span class="chip hot">the top 1%</span>
+        <span class="chip">bottom 50%</span>
+        <span class="chip">Gini coefficient</span>
+        <span class="chip">wage stagnation</span>
+        <span class="chip">social mobility</span>
+        <span class="chip">redistribution</span>
+        <span class="chip">disposable income</span>
+        <span class="chip">the wealth gap</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="badge">Define your terms first</span>
+    <span>Transition → “Let me show you how large that gap actually is.”</span>
+  </div>
+</section>
+
+<!-- ================= SLIDE 3 : THE EVIDENCE ================= -->
+<section class="slide">
+  <div class="topbar">
+    <span class="topic">Financial Inequality</span>
+    <span>Slide 3 of 8 · Main content — the data</span>
+  </div>
+
+  <div class="speaker-tag" style="margin-bottom:14px">Speaker 2</div>
+  <h2>The scale of the gap</h2>
+
+  <div class="statrow">
+    <div class="stat">
+      <div class="big">52<span class="unit">%</span></div>
+      <div class="cap">of global income goes to the <b style="color:#fff">richest 10%</b> of the world's population.</div>
+    </div>
+    <div class="stat alt">
+      <div class="big">8.5<span class="unit">%</span></div>
+      <div class="cap">goes to the <b style="color:#fff">poorest half</b> — 4 billion people.</div>
+    </div>
+    <div class="stat alt2">
+      <div class="big">38<span class="unit">×</span></div>
+      <div class="cap">more income, on average, for a person in the <b style="color:#fff">top 10%</b> compared with someone in the bottom 50%.</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <h3 style="margin-bottom:10px">Share of world income (2021)</h3>
+      <div class="chart">
+        <div class="bar-row">
+          <div class="bar-label">Top 10%</div>
+          <div class="bar-track"><div class="bar-fill" style="width:52%"></div></div>
+          <div class="bar-val">52%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Middle 40%</div>
+          <div class="bar-track"><div class="bar-fill gold" style="width:39.5%"></div></div>
+          <div class="bar-val">39.5%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Bottom 50%</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:8.5%"></div></div>
+          <div class="bar-val">8.5%</div>
+        </div>
+      </div>
+      <p style="font-size:.9em">Source: World Inequality Report 2022 (WID.world)</p>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom:10px">Share of household wealth, USA (2022)</h3>
+      <div class="chart">
+        <div class="bar-row">
+          <div class="bar-label">Top 10%</div>
+          <div class="bar-track"><div class="bar-fill" style="width:67.2%"></div></div>
+          <div class="bar-val">67.2%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">51st–90th</div>
+          <div class="bar-track"><div class="bar-fill gold" style="width:30.3%"></div></div>
+          <div class="bar-val">~30%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Bottom 50%</div>
+          <div class="bar-track"><div class="bar-fill blue" style="width:2.5%"></div></div>
+          <div class="bar-val">2.5%</div>
+        </div>
+      </div>
+      <p style="font-size:.9em">Source: U.S. Federal Reserve, Survey of Consumer Finances 2022</p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="badge">One number, one sentence</span>
+    <span>Say the figure out loud, then let the audience read the chart.</span>
+  </div>
+</section>
+
+<!-- ================= SLIDE 4 : WHY IT HAPPENS ================= -->
+<section class="slide">
+  <div class="topbar">
+    <span class="topic">Financial Inequality</span>
+    <span>Slide 4 of 8 · Causes</span>
+  </div>
+
+  <div class="speaker-tag" style="margin-bottom:14px">Speaker 3</div>
+  <h2>Why the gap has widened</h2>
+
+  <div class="grid2">
+    <div>
+      <div class="card accent" style="margin-bottom:14px">
+        <h3>1. Technological change &amp; globalisation</h3>
+        <p>Automation and offshoring removed many mid-skill manufacturing jobs in rich countries, while returns flowed to those who <b>own capital</b> and to highly skilled workers.</p>
+      </div>
+      <div class="card blue" style="margin-bottom:14px">
+        <h3>2. Declining bargaining power of labour</h3>
+        <p>Falling trade-union membership and more flexible contracts weakened workers' ability to negotiate pay rises — a pattern economists call <b>wage stagnation</b>.</p>
+      </div>
+      <div class="card gold">
+        <h3>3. Capital outgrows wages</h3>
+        <p>Returns on shares, property and savings have grown faster than wages, so the gap between <b>owners</b> and <b>earners</b> widens automatically each year.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="border-top:4px solid var(--accent-2)">
+        <h3>4. Inheritance and the “birth lottery”</h3>
+        <p>Oxfam estimates that <b>36% of billionaire wealth is inherited</b>. Wealth bought once keeps earning without further work, and it passes to the next generation largely untaxed in many countries.</p>
+      </div>
+
+      <div class="flow" style="margin-top:16px">
+        <div class="node">
+          <h3>Unequal access</h3>
+          <p>to schooling and healthcare</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <h3>Unequal skills</h3>
+          <p>and lower-paying jobs</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="node">
+          <h3>Low mobility</h3>
+          <p>the gap repeats itself</p>
+        </div>
+      </div>
+      <p style="margin-top:14px;font-size:.92em">
+        The OECD calls this a <b>“broken social elevator”</b>: in several countries it now takes <b>four to five generations</b>
+        for a low-income family to reach the average income (OECD, <i>A Broken Social Elevator?</i>, 2018).
+      </p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="badge">Cause → mechanism → consequence</span>
+    <span>Causes are not fate: they are the result of policy choices.</span>
+  </div>
+</section>
+
+<!-- ================= SLIDE 5 : EFFECTS ================= -->
+<section class="slide">
+  <div class="topbar">
+    <span class="topic">Financial Inequality</span>
+    <span>Slide 5 of 8 · Effects</span>
+  </div>
+
+  <div class="speaker-tag" style="margin-bottom:14px">Speaker 3</div>
+  <h2>What inequality does to a society</h2>
+
+  <div class="grid3">
+    <div class="card accent">
+      <h3>Economic drag</h3>
+      <ul style="margin-top:6px">
+        <li>Poor households cannot invest in education or health, so talent is wasted.</li>
+        <li>Demand is concentrated at the top, where people save rather than spend.</li>
+        <li>The IMF's <i>Fiscal Monitor: Tackling Inequality</i> (2017) found that high inequality can undermine the <b>durability of growth</b>.</li>
+      </ul>
+    </div>
+    <div class="card blue">
+      <h3>Social effects</h3>
+      <ul style="margin-top:6px">
+        <li>Frozen social mobility: your postcode predicts your income.</li>
+        <li>Erosion of trust in institutions, resentment between groups.</li>
+        <li>Widening gaps in life expectancy and mental health.</li>
+      </ul>
+    </div>
+    <div class="card gold">
+      <h3>Political effects</h3>
+      <ul style="margin-top:6px">
+        <li>Concentration of wealth can translate into <b>political influence</b>.</li>
+        <li>Capture of the rules — tax, competition, labour law.</li>
+        <li>Populism and protest movements on both sides of the debate.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px;border-left:5px solid var(--accent)">
+    <p style="font-size:clamp(14px,1.45vw,20px)">
+      <b>Counter-argument we should address:</b> inequality can reward innovation and effort.
+      The problem is not the existence of rich people — it is <b>wealth concentration so extreme</b> that it prevents others
+      from competing on equal terms. That is what the next slide is about.
+    </p>
+  </div>
+
+  <div class="foot">
+    <span class="badge">Weigh both sides</span>
+    <span>Transition → “So what could actually reduce the gap?”</span>
+  </div>
+</section>
+
+<!-- ================= SLIDE 6 : SOLUTIONS ================= -->
+<section class="slide">
+  <div class="topbar">
+    <span class="topic">Financial Inequality</span>
+    <span>Slide 6 of 8 · Solutions</span>
+  </div>
+
+  <div class="speaker-tag" style="margin-bottom:14px">Speaker 4</div>
+  <h2>Four policy levers</h2>
+
+  <div class="grid2">
+    <div>
+      <div class="card accent" style="margin-bottom:13px">
+        <h3>1. Progressive taxation</h3>
+        <p>Tax capital gains, property and large inheritances closer to the rates applied to wages. Oxfam's <i>Inequality Inc.</i> (2024) argues that taxing the wealthiest would raise money for public investment; the OECD's <i>Taxation and Inequality</i> (2024) discusses the design of such taxes for G20 finance ministers.</p>
+      </div>
+      <div class="card blue">
+        <h3>2. Invest in human capital</h3>
+        <p>Public education, childcare and healthcare widen opportunity and make the “social elevator” work again — the central recommendation of the OECD's social-mobility research.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card gold" style="margin-bottom:13px">
+        <h3>3. Fair wages and bargaining power</h3>
+        <p>Minimum wages indexed to living costs, stronger collective bargaining, and profit-sharing schemes so that employees own a stake in growth.</p>
+      </div>
+      <div class="card" style="border-top:4px solid #7d2a20;margin-bottom:13px">
+        <h3>4. Data and transparency</h3>
+        <p>Trustworthy statistics are themselves a policy tool: the WID.world project and the World Bank's Poverty and Inequality Platform make governments' promises measurable.</p>
+      </div>
+      <p style="font-size:.92em">
+        <b>Honest limitation:</b> wealth taxes are hard to administer, capital can move, and there is no single policy
+        that closes the gap — only a combination, over decades.
+      </p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="badge">Policy, not charity</span>
+    <span>Each lever: what it does → who it affects → what could go wrong.</span>
+  </div>
+</section>
+
+<!-- ================= SLIDE 7 : CONCLUSION / Q&A ================= -->
+<section class="slide">
+  <div class="topbar">
+    <span class="topic">Financial Inequality</span>
+    <span>Slide 7 of 8 · Conclusion &amp; discussion</span>
+  </div>
+
+  <div class="speaker-tag" style="margin-bottom:14px">Speaker 4</div>
+  <h2>Where we stand</h2>
+
+  <div class="grid2" style="align-items:start">
+    <div>
+      <ul>
+        <li><b>Financial inequality is measurable</b> — the Gini coefficient and top-10% shares turn a moral debate into a testable question.</li>
+        <li><b>The trend is not uniform.</b> Inequality <i>between</i> countries has fallen since 1990 (global Gini: 70 → 62), while inequality <i>within</i> many countries has risen.</li>
+        <li><b>It is a choice, not a law of nature.</b> WID.world's conclusion: tax, education and labour policy shape the distribution.</li>
+        <li><b>Our group's position:</b> the goal is not absolute equality but an economy where effort — not inheritance — decides success.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="margin-bottom:10px">Questions we expect from the class</h3>
+      <div class="qa">
+        <div class="q">
+          <div class="qq">Isn't some inequality useful?</div>
+          <div class="aa">Yes — rewards motivate effort. The debate is about the <i>degree</i> and about equal opportunity, not about zero inequality.</div>
+        </div>
+        <div class="q">
+          <div class="qq">Wouldn't wealth taxes just make capital leave?</div>
+          <div class="aa">That is a real risk; the OECD argues for coordinated rules between countries, not isolated taxes.</div>
+        </div>
+        <div class="q">
+          <div class="qq">Is global inequality rising or falling?</div>
+          <div class="aa">Between countries it has fallen since 1990; within many countries it has risen. Both are true at once.</div>
+        </div>
+        <div class="q">
+          <div class="qq">What can students do?</div>
+          <div class="aa">Follow the data, vote, and check a country's policy before repeating a headline: measurement matters.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="speaker-tag">▶ Speakers 1–4 — Q&amp;A panel</span>
+    <span class="badge">~3 min questions</span>
+  </div>
+</section>
+
+<!-- ================= SLIDE 8 : SOURCES ================= -->
+<section class="slide">
+  <div class="topbar">
+    <span class="topic">Financial Inequality</span>
+    <span>Slide 8 of 8 · References</span>
+  </div>
+
+  <div class="speaker-tag" style="margin-bottom:12px">All speakers</div>
+  <h2 style="margin-bottom:14px">Sources</h2>
+
+  <div class="sources">
+    <div class="src">
+      <div class="org">WID.world / World Inequality Lab</div>
+      <div class="ttl">World Inequality Report 2022 — Executive Summary</div>
+      <div class="url">wir2022.wid.world/executive-summary</div>
+    </div>
+    <div class="src">
+      <div class="org">World Bank — Data Blog</div>
+      <div class="ttl">How Income Growth Shapes Global Inequality (Poverty and Inequality Platform data)</div>
+      <div class="url">blogs.worldbank.org/en/opendata</div>
+    </div>
+    <div class="src">
+      <div class="org">OECD</div>
+      <div class="ttl">Society at a Glance 2024 — Income and wealth inequalities</div>
+      <div class="url">oecd.org/en/publications/society-at-a-glance-2024_918d8db3-en.html</div>
+    </div>
+    <div class="src">
+      <div class="org">OECD</div>
+      <div class="ttl">A Broken Social Elevator? How to Promote Social Mobility (2018) · Taxation and Inequality (2024)</div>
+      <div class="url">oecd.org/en/publications/2018/06/a-broken-social-elevator_g1g8e196.html</div>
+    </div>
+    <div class="src">
+      <div class="org">U.S. Federal Reserve</div>
+      <div class="ttl">Survey of Consumer Finances 2022 — distribution of household wealth</div>
+      <div class="url">federalreserve.gov/econres/scfindex.htm</div>
+    </div>
+    <div class="src">
+      <div class="org">UBS</div>
+      <div class="ttl">Global Wealth Report 2024 — global wealth distribution and the millionaire share</div>
+      <div class="url">ubs.com/global/en/wealth-management/global-wealth-report.html</div>
+    </div>
+    <div class="src">
+      <div class="org">Oxfam International</div>
+      <div class="ttl">Inequality Inc. (2024) · “Takers not Makers” press release, 20 January 2025</div>
+      <div class="url">oxfam.org/en/press-releases/billionaire-wealth-surges-2-trillion-2024</div>
+    </div>
+    <div class="src">
+      <div class="org">IMF</div>
+      <div class="ttl">Fiscal Monitor: Tackling Inequality (October 2017)</div>
+      <div class="url">imf.org/en/publications/fm/issues/2017/10/05/fiscal-monitor-october-2017</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span class="badge">Accessed for an EAP class presentation</span>
+    <span>Full URLs and citation format: see <b>handouts/references.md</b></span>
+  </div>
+</section>
+
+</div>
+
+<div id="controls">
+  <button id="prev" title="Previous (←)">‹</button>
+  <span id="counter">1 / 8</span>
+  <button id="next" title="Next (→)">›</button>
+  <button id="fs" title="Fullscreen (F)">⛶</button>
+</div>
+<div id="hint">← → arrows · F fullscreen · N speaker notes</div>
+
+<!-- ================= SPEAKER NOTES OVERLAY ================= -->
+<div id="notes" style="position:fixed;inset:auto 0 0 0;max-height:52vh;overflow-y:auto;background:#12181f;color:#e8edf3;padding:20px 26px;display:none;z-index:60;border-top:3px solid var(--accent)">
+  <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:8px">Speaker notes</div>
+  <div id="notes-body" style="font-size:15px;line-height:1.6"></div>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const notes=[
+ "<b>Speaker 1 (0:00–0:40).</b> Good morning. We are Group [number]: [names]. Today we are presenting on <b>financial inequality</b> — the third type in our series on inequality. Our talk has four parts: definitions, evidence, causes and effects, and solutions. We will take questions at the end.",
+ "<b>Speaker 1 (0:40–2:30).</b> Stress the income/wealth difference with a concrete image: 'Income is the water flowing into the bath; wealth is the water already in it — and some people started with a full bath.' Define Gini coefficient slowly, stress /ˈdʒiːni/. Hand over: 'Now [Name] will show you the size of that gap.'",
+ "<b>Speaker 2 (2:30–5:00).</b> Do not read every number. Point to the 52% and the 8.5% blocks and say one sentence each: 'Half the world's people share eight and a half percent of its income.' Then the US chart: 'In one of the richest countries, half of households hold two and a half percent of the wealth.' Pause after each figure.",
+ "<b>Speaker 3 (5:00–8:30).</b> Use the cause → mechanism → consequence structure. Emphasise the 'broken social elevator' metaphor and the four-to-five-generations figure. Hand over: 'But what does this do to a society? That is on the next slide.'",
+ "<b>Speaker 3 (8:30–11:00).</b> Balance is key: state the counter-argument in your own words before answering it — examiners reward this. Keep the three columns to one sentence each, then move on.",
+ "<b>Speaker 4 (11:00–14:00).</b> For each lever: what it does → who it affects → what could go wrong. Do not present the policies as certainties. Mention the honest limitation at the end — it shows critical thinking.",
+ "<b>Speaker 4 (14:00–15:30) then all speakers.</b> Conclusion in four sentences, then invite questions: 'We are happy to take your questions.' The four Q&amp;A cards are your preparation — the panel answers, not just the last speaker.",
+ "<b>All speakers (15:30–18:00).</b> Keep this slide up during Q&amp;A and point to the source when you quote a figure. Thank the class and ask for feedback on the criteria: pronunciation, pace, fluency, volume, transitions, enthusiasm, eye contact, posture, topic knowledge."
+];
+let cur=0;
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+  document.getElementById('counter').textContent=(cur+1)+' / '+slides.length;
+  document.getElementById('bar').style.width=((cur+1)/slides.length*100)+'%';
+  document.getElementById('notes-body').innerHTML=notes[cur]||'';
+}
+function go(d){cur=Math.min(Math.max(cur+d,0),slides.length-1);render();}
+document.getElementById('next').onclick=()=>go(1);
+document.getElementById('prev').onclick=()=>go(-1);
+document.getElementById('fs').onclick=()=>{
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen();}
+  else{document.exitFullscreen();}
+};
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();go(1);}
+  else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();go(-1);}
+  else if(e.key.toLowerCase()==='f'){document.getElementById('fs').click();}
+  else if(e.key.toLowerCase()==='n'){
+    const n=document.getElementById('notes');
+    n.style.display = n.style.display==='block' ? 'none' : 'block';
+  }
+  else if(e.key==='Home'){cur=0;render();}
+  else if(e.key==='End'){cur=slides.length-1;render();}
+});
+// touch swipe
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.changedTouches[0].clientX);
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>60) go(dx<0?1:-1);
+});
+render();
+</script>
+</body>
+</html>
